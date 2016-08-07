@@ -20,11 +20,38 @@ class MarkGantt {
   }
 
   redraw() {
+    var month:number = moment().month();
     var day = moment().daysInMonth()
     var size = this.w / day
+    var paddingTop = 48
+
+    this.ctx.save();
+    this.ctx.font = "24px 'sans-serif'";
+    this.ctx.fillText("" + (month + 1) + "月", 4, 24);
+    this.ctx.restore();
+
+    this.ctx.save()
+    for (var i = 0; i < day; i++) {
+      var t = moment().date(i + 1).weekday()
+      var color = "#FFFFFF";
+      if(t === 0){
+        color = "#DDDDFF"
+      }
+      if(t === 6){
+        color = "#FFDDDD"
+      }
+      this.ctx.fillStyle = color
+      this.ctx.fillRect(i * size, paddingTop, size, this.h - paddingTop)
+    }
+    this.ctx.restore();
 
     for (var i = 0; i < day; i++) {
-      this.line(i * size, 0, i * size, this.h)
+      this.ctx.save()
+      this.ctx.font = "12px 'sans-serif'"
+      this.ctx.textAlign = "center"
+      this.ctx.fillText(""+ (i+1), i * size + size / 2, paddingTop)
+      this.line(i * size, paddingTop, i * size, this.h)
+      this.ctx.restore()
     }
   }
 }
