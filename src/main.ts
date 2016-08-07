@@ -35,10 +35,10 @@ class MarkGantt {
       var t = moment().date(i + 1).weekday()
       var color = "#FFFFFF";
       if(t === 0){
-        color = "#DDDDFF"
+        color = "#FFDDDD"
       }
       if(t === 6){
-        color = "#FFDDDD"
+        color = "#DDDDFF"
       }
       this.ctx.fillStyle = color
       this.ctx.fillRect(i * size, paddingTop, size, this.h - paddingTop)
