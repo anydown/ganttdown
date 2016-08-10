@@ -1,11 +1,11 @@
 
-# markgantt
+# ganttdown
 
 
 
 ## Installation
 
-    $ npm install markgantt
+    $ npm install
     $ npm run dev
 
 ## License

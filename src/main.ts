@@ -1,6 +1,6 @@
 import * as moment from "moment"
 
-class MarkGantt {
+class GanttDown {
   ctx: CanvasRenderingContext2D
   w: number
   h: number
@@ -56,6 +56,6 @@ class MarkGantt {
   }
 }
 
-var markGantt = new MarkGantt(document.getElementById("mainCanvas"));
-markGantt.redraw();
+var ganttDown = new GanttDown(document.getElementById("mainCanvas"));
+ganttDown.redraw();
 
