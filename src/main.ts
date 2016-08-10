@@ -1,9 +1,11 @@
 import * as moment from "moment"
+import {Task, parseTask} from "./lib"
 
 class GanttDown {
   ctx: CanvasRenderingContext2D
   w: number
   h: number
+  tasks: Task[]
 
   constructor(el: HTMLElement) {
     var c = <HTMLCanvasElement>el;

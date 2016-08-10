@@ -1,6 +1,12 @@
 import * as moment from "moment"
 
-export function parseTask(textData: string): any {
+export class Task{
+  name: string
+  start: number
+  end: number
+}
+
+export function parseTask(textData: string): Task[] {
   var tasks = textData.split(/\r|\n|\r\n/).map(function (line) {
     line = line.replace(/／/g, "/");
     line = line.replace(/　/g, " ");
