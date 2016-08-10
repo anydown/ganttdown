@@ -21,19 +21,16 @@ class GanttDown {
     this.ctx.stroke();
   }
 
-  redraw() {
-    var month:number = moment().month();
-    var day = moment().daysInMonth()
-    var size = this.w / day
-    var paddingTop = 48
-
+  private drawMonthLabel(ctx: CanvasRenderingContext2D, month: number){
     this.ctx.save();
     this.ctx.font = "24px 'sans-serif'";
     this.ctx.fillText("" + (month + 1) + "月", 4, 24);
     this.ctx.restore();
+  }
 
-    this.ctx.save()
-    for (var i = 0; i < day; i++) {
+  private drawWeekdayBackground(ctx: CanvasRenderingContext2D, dayNum: number, size: number, paddingTop: number){
+    ctx.save()
+    for (var i = 0; i < dayNum; i++) {
       var t = moment().date(i + 1).weekday()
       var color = "#FFFFFF";
       if(t === 0){
@@ -42,19 +39,33 @@ class GanttDown {
       if(t === 6){
         color = "#DDDDFF"
       }
-      this.ctx.fillStyle = color
-      this.ctx.fillRect(i * size, paddingTop, size, this.h - paddingTop)
+      ctx.fillStyle = color
+      ctx.fillRect(i * size, paddingTop, size, this.h - paddingTop)
     }
-    this.ctx.restore();
+    ctx.restore();
+  }
 
-    for (var i = 0; i < day; i++) {
-      this.ctx.save()
+  private drawVerticalLines(ctx: CanvasRenderingContext2D, dayNum: number, size: number, paddingTop: number){
+    this.ctx.save()
+    for (var i = 0; i < dayNum; i++) {
       this.ctx.font = "12px 'sans-serif'"
       this.ctx.textAlign = "center"
       this.ctx.fillText(""+ (i+1), i * size + size / 2, paddingTop)
       this.line(i * size, paddingTop, i * size, this.h)
-      this.ctx.restore()
     }
+    this.ctx.restore()
+  }
+
+
+  redraw() {
+    var month:number = moment().month();
+    var day = moment().daysInMonth()
+    var size = this.w / day
+    var paddingTop = 48
+
+    this.drawMonthLabel(this.ctx, month)
+    this.drawWeekdayBackground(this.ctx, day, size, paddingTop)
+    this.drawVerticalLines(this.ctx, day, size, paddingTop)
   }
 }
 
