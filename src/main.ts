@@ -23,18 +23,18 @@ class GanttDown {
 
   private drawMonthLabel(ctx: CanvasRenderingContext2D, start: moment.Moment, dayNum: number, size: number){
     var month = start.month();
-    this.ctx.save();
-    this.ctx.font = "24px 'sans-serif'";
-    this.ctx.fillText("" + (month+1) + "月", 0, 24);
+    ctx.save();
+    ctx.font = "24px 'sans-serif'";
+    ctx.fillText("" + (month+1) + "月", 0, 24);
     var _start = start.clone()
     for (var i = 0; i < dayNum; i++) {
       if(_start.month() > month){
         month = _start.month();
-        this.ctx.fillText("" + (month+1) + "月", i * size, 24);
+        ctx.fillText("" + (month+1) + "月", i * size, 24);
       }
       _start.add(1, "days")
     }
-    this.ctx.restore();
+    ctx.restore();
   }
 
   private drawWeekdayBackground(ctx: CanvasRenderingContext2D, start: moment.Moment, dayNum: number, size: number, paddingTop: number){
@@ -58,15 +58,46 @@ class GanttDown {
 
   private drawVerticalLines(ctx: CanvasRenderingContext2D, start: moment.Moment, dayNum: number, size: number, paddingTop: number){
     this.ctx.save()
+    ctx.strokeStyle = "#AAA"
+
     var _start = start.clone()
     for (var i = 0; i < dayNum; i++) {
-      this.ctx.font = "12px 'sans-serif'"
-      this.ctx.textAlign = "center"
-      this.ctx.fillText(""+ _start.date(), i * size + size / 2, paddingTop)
+      ctx.font = "12px 'sans-serif'"
+      ctx.textAlign = "center"
+      ctx.fillText(""+ _start.date(), i * size + size / 2, paddingTop)
       this.line(i * size, paddingTop, i * size, this.h)
       _start.add(1, "days")
     }
     this.ctx.restore()
+  }
+  private drawTasks(ctx: CanvasRenderingContext2D, start: moment.Moment, dayNum: number, size: number, paddingTop: number, tasks: Task[]){
+    const taskMargin: number = 18;
+    const taskHeight: number = 12;
+    const paddingRight: number = 6;
+
+    ctx.save()
+    var _start = start.clone()
+    for (var i = 0; i < tasks.length; i++) {
+      var taskStart = moment(tasks[i].start);
+      var taskEnd = moment(tasks[i].end);
+      var startX = taskStart.diff(_start, "days") * size
+      var endX = taskEnd.diff(_start, "days") * size
+
+      ctx.fillStyle = "#66C"
+      ctx.fillRect( startX, paddingTop + i * (taskHeight + taskMargin) + taskMargin, endX - startX, taskHeight)
+
+      ctx.strokeStyle = "#000"
+      ctx.strokeRect( startX, paddingTop + i * (taskHeight + taskMargin) + taskMargin, endX - startX, taskHeight)
+
+      ctx.textBaseline = "middle"
+      ctx.font = "bold 12px 'sans-serif'"
+      ctx.textAlign = "end"
+
+      ctx.fillStyle = "#000"
+      ctx.fillText(""+ tasks[i].name, startX - paddingRight, paddingTop + i * (taskHeight + taskMargin) + taskMargin + taskHeight / 2)
+
+    }
+    ctx.restore()
   }
 
   redraw() {
@@ -85,6 +116,7 @@ class GanttDown {
     this.drawMonthLabel(this.ctx, start, days, size)
     this.drawWeekdayBackground(this.ctx, start, days, size, paddingTop)
     this.drawVerticalLines(this.ctx, start, days, size, paddingTop)
+    this.drawTasks(this.ctx, start, days, size, paddingTop, parseTask("task1 2016-08-16 2016-08-16\rtask2 2016-08-17 2016-08-18\rtask3 2016-08-18 2016-08-24"));
   }
 }
 
