@@ -64,7 +64,18 @@ class GanttDown {
     for (var i = 0; i < dayNum; i++) {
       ctx.font = "12px 'sans-serif'"
       ctx.textAlign = "center"
-      ctx.fillText(""+ _start.date(), i * size + size / 2, paddingTop)
+
+      //土日の文字色
+      var t = _start.weekday()
+      var color = "#000000";
+      if(t === 0){
+        color = "#FF3333"
+      }
+      if(t === 6){
+        color = "#3333FF"
+      }      
+      ctx.fillStyle = color
+      ctx.fillText(""+ _start.date(), i * size + size / 2, paddingTop - 4)
       this.line(i * size, paddingTop, i * size, this.h)
       _start.add(1, "days")
     }
