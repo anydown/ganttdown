@@ -59,6 +59,7 @@ class GanttDown {
   private drawVerticalLines(ctx: CanvasRenderingContext2D, start: moment.Moment, dayNum: number, size: number, paddingTop: number){
     this.ctx.save()
     ctx.strokeStyle = "#AAA"
+    const labelBottomMargin = 4;
 
     var _start = start.clone()
     for (var i = 0; i < dayNum; i++) {
@@ -75,7 +76,7 @@ class GanttDown {
         color = "#3333FF"
       }      
       ctx.fillStyle = color
-      ctx.fillText(""+ _start.date(), i * size + size / 2, paddingTop - 4)
+      ctx.fillText(""+ _start.date(), i * size + size / 2, paddingTop - labelBottomMargin)
       this.line(i * size, paddingTop, i * size, this.h)
       _start.add(1, "days")
     }
