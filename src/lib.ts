@@ -21,8 +21,11 @@ export function parseTask(textData: string): Task[] {
       "YYYY-MM-DD"
     ];
 
-    var startTime = moment.utc(args[1], inputPattern);
-    var endTime = moment.utc(args[2], inputPattern);
+    var startTime:moment.Moment = moment.utc(args[1], inputPattern);
+    var endTime:moment.Moment | null = null
+    if(args[2]){
+      endTime = moment.utc(args[2], inputPattern);
+    }
 
     if (args.length > 2) {
       return {
@@ -31,6 +34,14 @@ export function parseTask(textData: string): Task[] {
         end: endTime.unix() * 1000 + 1000 * 60 * 60 * 24
       };
     }
+    if (args.length === 2){
+      return {
+        name: args[0],
+        start: startTime.unix() * 1000,
+        end: null
+      };
+    }
+
     return null;
   }).filter(function (item) { return item });
 

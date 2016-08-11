@@ -1,5 +1,5 @@
 import * as moment from "moment"
-import {Task, parseTask} from "./lib"
+import { Task, parseTask } from "./lib"
 
 class GanttDown {
   ctx: CanvasRenderingContext2D
@@ -21,32 +21,32 @@ class GanttDown {
     this.ctx.stroke();
   }
 
-  private drawMonthLabel(ctx: CanvasRenderingContext2D, start: moment.Moment, dayNum: number, size: number){
+  private drawMonthLabel(ctx: CanvasRenderingContext2D, start: moment.Moment, dayNum: number, size: number) {
     var month = start.month();
     ctx.save();
     ctx.font = "24px 'sans-serif'";
-    ctx.fillText("" + (month+1) + "月", 0, 24);
+    ctx.fillText("" + (month + 1) + "月", 0, 24);
     var _start = start.clone()
     for (var i = 0; i < dayNum; i++) {
-      if(_start.month() > month){
+      if (_start.month() > month) {
         month = _start.month();
-        ctx.fillText("" + (month+1) + "月", i * size, 24);
+        ctx.fillText("" + (month + 1) + "月", i * size, 24);
       }
       _start.add(1, "days")
     }
     ctx.restore();
   }
 
-  private drawWeekdayBackground(ctx: CanvasRenderingContext2D, start: moment.Moment, dayNum: number, size: number, paddingTop: number){
+  private drawWeekdayBackground(ctx: CanvasRenderingContext2D, start: moment.Moment, dayNum: number, size: number, paddingTop: number) {
     var _start = start.clone()
     ctx.save()
     for (var i = 0; i < dayNum; i++) {
       var t = _start.weekday()
       var color = "#FFFFFF";
-      if(t === 0){
+      if (t === 0) {
         color = "#FFDDDD"
       }
-      if(t === 6){
+      if (t === 6) {
         color = "#DDDDFF"
       }
       ctx.fillStyle = color
@@ -56,7 +56,7 @@ class GanttDown {
     ctx.restore();
   }
 
-  private drawVerticalLines(ctx: CanvasRenderingContext2D, start: moment.Moment, dayNum: number, size: number, paddingTop: number){
+  private drawVerticalLines(ctx: CanvasRenderingContext2D, start: moment.Moment, dayNum: number, size: number, paddingTop: number) {
     this.ctx.save()
     ctx.strokeStyle = "#AAA"
     const labelBottomMargin = 4;
@@ -69,25 +69,24 @@ class GanttDown {
       //土日の文字色
       var t = _start.weekday()
       var color = "#000000";
-      if(t === 0){
+      if (t === 0) {
         color = "#FF3333"
       }
-      if(t === 6){
+      if (t === 6) {
         color = "#3333FF"
-      }      
+      }
       ctx.fillStyle = color
-      ctx.fillText(""+ _start.date(), i * size + size / 2, paddingTop - labelBottomMargin)
+      ctx.fillText("" + _start.date(), i * size + size / 2, paddingTop - labelBottomMargin)
       this.line(i * size, paddingTop, i * size, this.h)
       _start.add(1, "days")
     }
     this.ctx.restore()
   }
-  private drawTasks(ctx: CanvasRenderingContext2D, start: moment.Moment, dayNum: number, size: number, paddingTop: number, tasks: Task[]){
+  private drawTasks(ctx: CanvasRenderingContext2D, start: moment.Moment, dayNum: number, size: number, paddingTop: number, tasks: Task[]) {
     const taskMargin: number = 18;
     const taskHeight: number = 12;
-    const paddingRight: number = 6;
+    let paddingRight: number = 6;
 
-    ctx.save()
     var _start = start.clone()
     for (var i = 0; i < tasks.length; i++) {
       var taskStart = moment(tasks[i].start);
@@ -95,40 +94,64 @@ class GanttDown {
       var startX = taskStart.diff(_start, "days") * size
       var endX = taskEnd.diff(_start, "days") * size
 
-      ctx.fillStyle = "#66C"
-      ctx.fillRect( startX, paddingTop + i * (taskHeight + taskMargin) + taskMargin, endX - startX, taskHeight)
+      if (!tasks[i].end) {
+        ctx.save()
+        var mileStoneSize = 8;
+        //Milestone
+        ctx.fillStyle = "#66C"
+        ctx.translate(startX, paddingTop + i * (taskHeight + taskMargin) + taskMargin + taskHeight / 2);
+        ctx.moveTo(0, -mileStoneSize)
+        ctx.lineTo(-mileStoneSize, 0)
+        ctx.lineTo(0, mileStoneSize)
+        ctx.lineTo(mileStoneSize, 0)
+        ctx.lineTo(0, -mileStoneSize)
+        ctx.fillStyle = "#999"
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore()
+        paddingRight += mileStoneSize * 0.8
 
-      ctx.strokeStyle = "#000"
-      ctx.strokeRect( startX, paddingTop + i * (taskHeight + taskMargin) + taskMargin, endX - startX, taskHeight)
+      } else {
+        ctx.save()
+        ctx.fillStyle = "#66C"
+        ctx.fillRect(startX, paddingTop + i * (taskHeight + taskMargin) + taskMargin, endX - startX, taskHeight)
 
+        ctx.strokeStyle = "#000"
+        ctx.strokeRect(startX, paddingTop + i * (taskHeight + taskMargin) + taskMargin, endX - startX, taskHeight)
+        ctx.restore()
+      }
+      ctx.save()
       ctx.textBaseline = "middle"
       ctx.font = "bold 12px 'sans-serif'"
       ctx.textAlign = "end"
 
       ctx.fillStyle = "#000"
-      ctx.fillText(""+ tasks[i].name, startX - paddingRight, paddingTop + i * (taskHeight + taskMargin) + taskMargin + taskHeight / 2)
+      ctx.fillText("" + tasks[i].name, startX - paddingRight, paddingTop + i * (taskHeight + taskMargin) + taskMargin + taskHeight / 2)
+      ctx.restore()
 
     }
-    ctx.restore()
   }
 
   redraw() {
     var days = 36;
 
     var start = moment();
-    start.set({hour:0,minute:0,second:0,millisecond:0});
+    start.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
 
     var end = moment().add(days, "days");
-    end.set({hour:0,minute:0,second:0,millisecond:0});
+    end.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
 
-    var month:number = moment().month();
+    var month: number = moment().month();
     var size = this.w / days
     var paddingTop = 48
 
     this.drawMonthLabel(this.ctx, start, days, size)
     this.drawWeekdayBackground(this.ctx, start, days, size, paddingTop)
     this.drawVerticalLines(this.ctx, start, days, size, paddingTop)
-    this.drawTasks(this.ctx, start, days, size, paddingTop, parseTask("task1 2016-08-16 2016-08-16\rtask2 2016-08-17 2016-08-18\rtask3 2016-08-18 2016-08-24"));
+
+    var tasks = parseTask("task1 2016-08-16 2016-08-16\rtask2 2016-08-17 2016-08-18\rtask3 2016-08-18 2016-08-24\rMilestone 2016-08-25");
+    console.log(tasks);
+    this.drawTasks(this.ctx, start, days, size, paddingTop, tasks);
   }
 }
 
